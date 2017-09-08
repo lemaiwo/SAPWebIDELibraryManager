@@ -1,3 +1,0 @@
-selectie met subscribe op selection change event
-
-mooie error als manifest niet bestaat

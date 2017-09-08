@@ -1,0 +1,20 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:layout="sap.ui.layout"
+	controllerName="packagemanagersidebarplugin.controller.PackageSearch" xmlns:html="http://www.w3.org/1999/xhtml">
+	<layout:VerticalLayout width="100%">
+		<layout:content>
+			<Title text="Library Browser" titleStyle="H3"/>
+			<Text text="Selected project: {/project}" />
+			<Toolbar class="sapUiMediumMarginTop" id="toolbar1">
+				<Input value="{/search}" submit="onSearch"></Input>
+				<Button text="Search" press="onSearch"></Button>
+			</Toolbar>
+			<ScrollContainer height="500px" width="100%" horizontal="true" vertical="true" focusable="true">
+				<List headerText="Libraries ({/total})" items="{ path: '/results', sorter: { path: 'name' } }" itemPress="onSelectionChange" mode="None">
+					<items>
+						<StandardListItem title="{name}" type="Active" description="{description}"/>
+					</items>
+				</List>
+			</ScrollContainer>
+		</layout:content>
+	</layout:VerticalLayout>
+</mvc:View>

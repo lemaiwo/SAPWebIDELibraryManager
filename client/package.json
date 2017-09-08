@@ -1,0 +1,11 @@
+{
+	"name": "packagemanagerfeature",
+	"title": "packagemanagerfeature",
+	"version": "1.0.0",
+	"description": "Package Manager Feature",
+	"homepage": "",
+	"icon": "",
+	"bundledPlugins": {
+		"packagemanagersidebarplugin": "file:packagemanagersidebarplugin"
+	}
+}

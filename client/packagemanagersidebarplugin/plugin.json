@@ -1,0 +1,79 @@
+{
+	"name": "packagemanagersidebarplugin",
+	"description": "Package Manager Sidebar Plugin",
+    "module" : "packagemanagersidebarplugin/Plugin",
+	"i18n": "packagemanagersidebarplugin/i18n/i18n",
+	"requires": {
+		"services": [
+			"progress",
+			"beautifierProcessor",
+			"perspective",
+			"content",
+			"command",
+			"commandGroup",
+			"selection"
+		]
+	},
+	"provides": {
+		"services": {
+			"packagesearchservice": {
+				"implements": "sap.watt.common.service.ui.Part",
+				"module": "packagemanagersidebarplugin/service/PackageSearch"
+			},
+			"cdnjs": {
+				"implements": "packagemanagersidebarplugin.service.Cdnjs",
+				"module": "packagemanagersidebarplugin/service/Cdnjs"
+			},
+			"manifest": {
+				"implements": "packagemanagersidebarplugin.service.Manifest",
+				"module": "packagemanagersidebarplugin/service/Manifest"
+			}
+		},
+
+		"interfaces": {
+			"packagemanagersidebarplugin.service.Cdnjs": "packagemanagersidebarplugin/service/Cdnjs",
+			"packagemanagersidebarplugin.service.Manifest": "packagemanagersidebarplugin/service/Manifest"
+		}
+	},
+	"configures": {
+		"services": {
+			"perspective:views": [{
+				"id": "packagesearchview",
+				"service": "@packagesearchservice"
+			}],
+			"perspective:viewToAreaMapping": [{
+				"view": "packagesearchview",
+				"perspective": "development",
+				"area": "right"
+			}],
+			"command:commands": [{
+				"id": "packagesearchcommand",
+				"label": "{i18n>command_label}.",
+				"icon": "sap-icon://product",
+				"service": {
+					"implements": "sap.watt.common.service.ide.AbstractUIPartToggler",
+					"module": "sap.watt.common.perspective/command/AbstractUIPartToggler",
+					"configuration": {
+						"id": "packagesearchcommand",
+						"service": "@packagesearchservice",
+						"perspective": "development"
+					}
+				},
+				"keyBinding": "mod+shift+9"
+			}],
+
+			"commandGroup:items": [{
+				"parent": "applicationRightSidebar",
+				"command": "packagesearchcommand",
+				"prio": 101
+			}, {
+				"parent": "view",
+				"command": "packagesearchcommand",
+				"prio": 101
+			}]
+		}
+	},
+	"subscribes": {
+		"selection:changed" : "onSelectionChanged"
+	}
+}

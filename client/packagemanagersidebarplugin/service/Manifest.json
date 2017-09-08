@@ -1,0 +1,70 @@
+{
+	"name": "packagemanagersidebarplugin.service.Manifest",
+	"description": "The sample service interface",
+	"methods": {
+		"setSelection":{
+			"description": "keep selection",
+			"params": [{
+				"name": "oSelection",
+				"type": "object",
+				"description": "selection"
+			}]
+		},
+		"addSourceManifest": {
+			"description": "add js source to manifest",
+			"params": [{
+				"name": "manifest",
+				"type": "object",
+				"description": "selected manifest file"
+			},{
+				"name": "source",
+				"type": "object",
+				"description": "data"
+			},{
+				"name": "selectedversion",
+				"type": "string",
+				"description": "selected version"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "List of files"
+			}
+		},
+		"createLibFolder": {
+			"description": "create lib folder",
+			"params": [],
+			"returns": {
+				"type": "object",
+				"description": "promise"
+			}
+		},
+		"createFile": {
+			"description": "add js source to manifest",
+			"params": [{
+				"name": "file",
+				"type": "object",
+				"description": "selected manifest file"
+			},{
+				"name": "content",
+				"type": "object",
+				"description": "data"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "List of files"
+			}
+		},
+		"getManifest": {
+			"description": "Get list of the files in a selected project",
+			"params": [{
+				"name": "folder",
+				"type": "object",
+				"description": "project"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "List of files"
+			}
+		}
+	}
+}

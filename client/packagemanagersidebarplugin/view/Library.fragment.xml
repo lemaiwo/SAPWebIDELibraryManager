@@ -1,0 +1,72 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
+	<Dialog title="Add library '{name}' to project '{dialog>/project}'" showHeader="true">
+		<content>
+			<f:Form editable="false">
+				<f:layout>
+					<f:ResponsiveGridLayout labelSpanXL="4" labelSpanL="3" labelSpanM="4" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="4"
+						emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
+				</f:layout>
+				<f:formContainers>
+					<f:FormContainer>
+						<f:formElements>
+							<f:FormElement label="You're including the library in the project">
+								<f:fields>
+									<Input value="{dialog>/project}" id="project" editable="false"/>
+								</f:fields>
+							</f:FormElement>
+							<f:FormElement label="Name">
+								<f:fields>
+									<Input value="{name}" id="name" editable="false"/>
+								</f:fields>
+							</f:FormElement>
+							<f:FormElement label="Description">
+								<f:fields>
+									<Input value="{description}" editable="false"/>
+								</f:fields>
+							</f:FormElement>
+							<f:FormElement label="Versions">
+								<f:fields>
+									<Select items="{assets}" change="updateFiles" selectedKey="{/selectedVersion}">
+										<items>
+											<core:Item text="{version}" key="{version}"/>
+										</items>
+									</Select>
+								</f:fields>
+							</f:FormElement>
+						</f:formElements>
+					</f:FormContainer>
+				</f:formContainers>
+			</f:Form>
+			<Table id="files" inset="false" items="{ path: 'files' }">
+				<columns>
+					<Column width="12em">
+						<Text text="Filename"/>
+					</Column>
+					<Column width="12em">
+						<Text text="Download"/>
+					</Column>
+					<Column width="12em">
+						<Text text="Manifest"/>
+					</Column>
+					<Column width="12em">
+						<Text text="Status"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<Text text="{filename}"/>
+							<Switch state="{download}"/>
+							<Switch state="{manifest}"/>
+							<Text text="{status}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</content>
+		<buttons>
+			<Button icon="sap-icon://add" press="onAdd"></Button>
+			<Button icon="sap-icon://decline" press="onClose"></Button>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,42 @@
+{
+	"name": "packagemanagersidebarplugin.service.Cdnjs",
+	"description": "The sample service interface",
+	"methods": {
+		"search": {
+			"description": "search cdnjs",
+			"params": [{
+				"name": "sSearch",
+				"type": "string",
+				"description": "search"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "result"
+			}
+		},
+		"getFile": {
+			"description": "get files from cdnjs",
+			"params": [{
+				"name": "aFiles",
+				"type": "array",
+				"description": "files"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "result"
+			}
+		},
+		"getLibrary": {
+			"description": "get lib cdnjs",
+			"params": [{
+				"name": "sLibraryName",
+				"type": "string",
+				"description": "library"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "result"
+			}
+		}
+	}
+}

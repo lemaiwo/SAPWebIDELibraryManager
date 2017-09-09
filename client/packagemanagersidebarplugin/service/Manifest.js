@@ -20,10 +20,18 @@ define({
 	setSelection: function(oSelection) {
 		this.selection = oSelection;
 	},
+	getSelection: function() {
+		if (this.selection.getEntity().getName()) {
+			return this.selection;
+		}
+		throw {
+			message: "No project selected"
+		};
+	},
 	addSourceManifest: function(files, selectedversion) {
 		var me = this;
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
-		return me.context.service.manifest.getManifest(this.selection).then(function(manifest) {
+		return me.context.service.manifest.getManifest(this.getSelection()).then(function(manifest) {
 			me.manifest = manifest;
 			return manifest.getContent();
 		}).then(function(result) {
@@ -83,14 +91,14 @@ define({
 	},
 	createLibFolder: function(downloadpath) {
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
-		return this.selection.getProject().then(function(project) {
+		return this.getSelection().getProject().then(function(project) {
 			return project.createFolder("webapp/" + downloadpath);
 		});
 	},
 	createFile: function(downloadpath, file, content) {
 		var me = this;
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
-		return this.selection.getProject().then(function(project) {
+		return this.getSelection().getProject().then(function(project) {
 			return project.createFolder("webapp/" + downloadpath);
 		}).catch(function(error) {
 			file.downloadstatus = false;
@@ -153,7 +161,7 @@ define({
 		// });
 
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
-		return this.selection.getProject().then(function(project) {
+		return this.getSelection().getProject().then(function(project) {
 			return me.getManifestFile(project);
 		}).then(function(files) {
 			if (files && files[0] && !Array.isArray(files[0])) {

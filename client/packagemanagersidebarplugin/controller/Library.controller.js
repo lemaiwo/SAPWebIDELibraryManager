@@ -2,17 +2,25 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 	'sap/ui/model/Context',
 	'sap/m/MessageToast',
 	'sap/m/MessageBox',
-	'sap/ui/model/json/JSONModel'
-], function(BaseController, Context, MessageToast,MessageBox,JSONModel) {
+	'sap/ui/model/json/JSONModel',
+	"sap/m/BusyDialog"
+], function(BaseController, Context, MessageToast,MessageBox,JSONModel,BusyDialog) {
 	"use strict";
 	return BaseController.extend("packagemanagersidebarplugin.controller.Library", {
+		busyDialog: new BusyDialog({
+				showCancelButton: false
+			}).addStyleClass("busy_indicator"),
 		onBeforeShow: function(parent, fragment, callback, data) {
 			this.parent = parent;
 			this.fragment = fragment;
 			this.callback = callback;
 			this.data = data;
-
+			
 			var FileContext = new Context(this.fragment.getModel(), data.path + "/assets/0");
+			
+			var model = this.fragment.getModel();
+			model.setProperty("/selectedVersion",FileContext.getObject().version);
+			
 			this.getFragmentControlById(this.parent, "files").setBindingContext(FileContext);
 			this.fragment.bindElement(data.path);
 			var dialogmodel = new JSONModel({project:data.project});
@@ -51,6 +59,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 					});
 				}
 			});
+			me.busyDialog.open();
 			model.refresh();
 			context.service.progress.startTask("loadlibrary", "Loading library").then(function(taskid) {
 				me.taskId = taskid;
@@ -77,6 +86,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 				MessageBox.error("Finished with errors",{details:error.message});
 			}).then(function(){
 				model.refresh();
+				me.busyDialog.close();
 				return context.service.progress.stopTask(me.taskId);
 			});
 		},

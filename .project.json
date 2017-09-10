@@ -31,5 +31,10 @@
       "xml": "xmlValidator",
       "js": "jsValidator"
     }
+  },
+  "hcpdeploy": {
+    "account": "a6ac3f497",
+    "name": "sapwebidelibrarymanager",
+    "lastVersionWeTriedToDeploy": "1.0.0"
   }
 }

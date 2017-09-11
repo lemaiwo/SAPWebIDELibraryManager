@@ -87,7 +87,12 @@ define({
 	search: function(sSearch) {
 		var me = this;
 		
-		return me.$http( me.sBaseUrl + "/libraries?search=" + sSearch + "&fields=name,description,assets").get();
+		return me.$http( me.sBaseUrl + "/libraries?search=" + sSearch + "&fields=name,description,assets").get().then(
+			function( response ){
+				// parse output to json. 
+				return JSON.parse(response);
+			}
+		);
 	},
 	getFile: function(file) {
 		var me = this;

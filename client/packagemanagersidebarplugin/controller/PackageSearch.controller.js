@@ -28,21 +28,35 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			context.service.progress.startTask("searchlibraries", "Search for libraries").then(function(taskid) {
 				me.taskId = taskid;
 				return context.service.cdnjs.search(search).then(function(result) {
-					result = JSON.parse(result);
-					result.results.map(function(library) {
-						return library.assets.map(function(asset) {
-							asset.files = asset.files.map(function(file) {
-								return {
-									filename: file,
-									download: true,
-									manifest: true,
-									status: ""
-								};
-							});
+					var transformedResult = [];
+					result.results.each(function(library) {
+						
+						library.assets.map(function( asset ){
+							asset.files = asset.files.reduce(
+								function( result, file ){
+									if(/\.(map)$/i.test(file)){
+										// skip '.map' files
+									} else {
+										// default set min.js and min.css to the manifest
+										// download all ...
+										var manifest = /\.min\.(js|css)$/i.test(file);
+										result.push(
+											{
+												filename: file,
+												download: true,
+												manifest: manifest,
+												status: ""
+											}
+										)
+									}
+								}
+							);
 							return asset;
 						});
+						transformedResult.push(library);
+						
 					});
-					me.getView().getModel().setProperty("/results", result.results);
+					me.getView().getModel().setProperty("/results", transformedResult);
 					me.getView().getModel().setProperty("/total", result.total);
 					return context.service.progress.stopTask(me.taskId);
 				}).catch(function(){

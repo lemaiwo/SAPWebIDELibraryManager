@@ -41,14 +41,21 @@ define({
 			if (!r.js) {
 				r.js = [];
 			}
+			if (!r.css) {
+				r.css = [];
+			}
 			files.forEach(function(source) {
+				if(!/\.(js|css)$/i.test(source.filename)){
+					source.status += "Only CSS en JS can be added to the manifest";
+					return;
+				}
 				if ((source.download && source.downloadstatus) || !source.download) {
 					//&& source.manifest )||(!source.download && source.manifest)) {
+					var extension = source.filename.substr(source.filename.lastIndexOf(".")+1);
 					var addFile = true;
-					r.js = r.js.map(function(jsdoc) {
+					r[extension] = r[extension].map(function(jsdoc) {
 						if (jsdoc && jsdoc.name && jsdoc.version && jsdoc.name === source.filename && source.manifest) {
 							//&& jsdoc.version === selectedversion && jsdoc.uri === source.url         ) {
-							//already exists --> overwrite?
 							addFile = false;
 							source.status += "Updated entry in the manifest";
 							return {
@@ -59,10 +66,9 @@ define({
 						}
 						return jsdoc;
 					});
-					r.js = r.js.filter(function(jsdoc) {
+					r[extension] = r[extension].filter(function(jsdoc) {
 						if (jsdoc && jsdoc.name && jsdoc.version && jsdoc.name === source.filename && !source.manifest) {
 							//&& jsdoc.version === selectedversion && jsdoc.uri === source.url         ) {
-							//already exists --> overwrite?
 							addFile = false;
 							source.status += "Deleted entry in the manifest";
 							return false;
@@ -72,7 +78,7 @@ define({
 					// source.status += sStatus;
 					if (addFile && source.manifest) {
 						source.status += "Added new entry in the manifest";
-						r.js.push({
+						r[[extension]].push({
 							uri: source.manifesturi,
 							name: source.filename,
 							version: selectedversion

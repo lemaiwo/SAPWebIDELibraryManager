@@ -1,7 +1,7 @@
 sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 	"sap/ui/model/json/JSONModel",
 	'sap/m/MessageBox'
-], function(Controller, JSONModel,MessageBox) {
+], function(Controller, JSONModel, MessageBox) {
 	"use strict";
 
 	return Controller.extend("packagemanagersidebarplugin.controller.PackageSearch", {
@@ -15,7 +15,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 
 			this.getView().setModel(new JSONModel({
 				search: "",
-				project:"Nothing selected",
+				project: "Nothing selected",
 				results: [],
 				total: 0
 			}));
@@ -29,37 +29,35 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 				me.taskId = taskid;
 				return context.service.cdnjs.search(search).then(function(result) {
 					var transformedResult = [];
-					result.results.each(function(library) {
-						
-						library.assets.map(function( asset ){
+					result.results.forEach(function(library) {
+
+						library.assets.map(function(asset) {
 							asset.files = asset.files.reduce(
-								function( result, file ){
-									if(/\.(map)$/i.test(file)){
+								function(result, file) {
+									if (/\.(map)$/i.test(file)) {
 										// skip '.map' files
 									} else {
 										// default set min.js and min.css to the manifest
 										// download all ...
 										var manifest = /\.min\.(js|css)$/i.test(file);
-										result.push(
-											{
-												filename: file,
-												download: true,
-												manifest: manifest,
-												status: ""
-											}
-										)
+										result.push({
+											filename: file,
+											download: true,
+											manifest: manifest,
+											status: ""
+										});
 									}
-								}
-							);
+									return result;
+								}, []);
 							return asset;
 						});
 						transformedResult.push(library);
-						
+
 					});
 					me.getView().getModel().setProperty("/results", transformedResult);
 					me.getView().getModel().setProperty("/total", result.total);
 					return context.service.progress.stopTask(me.taskId);
-				}).catch(function(){
+				}).catch(function() {
 					MessageBox.error("Error during search, try again later...");
 					return context.service.progress.stopTask(me.taskId);
 				});
@@ -69,7 +67,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			var me = this,
 				listItem = oEvent.getParameter("listItem");
 			if (listItem) {
-				var path = listItem.getBindingContextPath(); 
+				var path = listItem.getBindingContextPath();
 			}
 			if (path) {
 				me.openFragment("packagemanagersidebarplugin.view.Library", null, true, false, {

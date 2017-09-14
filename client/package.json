@@ -1,9 +1,9 @@
 {
 	"name": "packagemanagerfeature",
-	"title": "packagemanagerfeature",
+	"title": "Library Manager",
 	"version": "1.0.0",
-	"description": "Package Manager Feature",
-	"homepage": "",
+	"description": "Library Manager for the SAP Web IDE",
+	"homepage": "https://github.com/lemaiwo/SAPWebIDELibraryManager",
 	"icon": "",
 	"bundledPlugins": {
 		"packagemanagersidebarplugin": "file:packagemanagersidebarplugin"

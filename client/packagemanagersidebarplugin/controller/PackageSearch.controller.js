@@ -25,6 +25,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			var search = this.getView().getModel().getProperty("/search");
 			var view = this.getView();
 			var context = view.getViewData().context;
+			context.service.cdnjs.abortSearch();
 			if(me.taskId){
 				context.service.progress.stopTask(me.taskId);
 			}
@@ -78,6 +79,14 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 					project: me.getView().getModel().getProperty("/project")
 				});
 
+			}
+		},
+		onCancel:function(oEvent){
+			var view = this.getView();
+			var context = view.getViewData().context;
+			context.service.cdnjs.abortSearch();
+			if(this.taskId){
+				context.service.progress.stopTask(this.taskId);
 			}
 		}
 

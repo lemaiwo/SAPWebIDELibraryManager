@@ -2,6 +2,14 @@
 	"name": "packagemanagersidebarplugin.service.Cdnjs",
 	"description": "The sample service interface",
 	"methods": {
+		"abortSearch": {
+			"description": "abort search",
+			"params": [],
+			"returns": {
+				"type": "object",
+				"description": "result"
+			}
+		},
 		"search": {
 			"description": "search cdnjs",
 			"params": [{

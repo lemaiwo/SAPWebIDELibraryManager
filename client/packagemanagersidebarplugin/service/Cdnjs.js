@@ -18,7 +18,7 @@
  */
 define({
 	sBaseUrl: "https://api.cdnjs.com",
-	client:null,
+	client: null,
 	$http: function(url) {
 		var me = this;
 		// A small example of object
@@ -29,9 +29,9 @@ define({
 
 				// Creating a promise
 				var promise = new Promise(function(resolve, reject) {
-					if(me.client){
-						me.client.abort();
-					}
+					// if (me.client) {
+					// 	me.client.abort();
+					// }
 					// Instantiates the XMLHttpRequest
 					me.client = new XMLHttpRequest();
 					var uri = url;
@@ -89,38 +89,43 @@ define({
 	},
 	search: function(sSearch) {
 		var me = this;
-		
-		return me.$http( me.sBaseUrl + "/libraries?search=" + sSearch + "&fields=name,description,assets").get().then(
-			function( response ){
+
+		return me.$http(me.sBaseUrl + "/libraries?search=" + sSearch + "&fields=name,description,assets").get().then(
+			function(response) {
 				// parse output to json. 
 				return JSON.parse(response);
 			}
 		);
 	},
+	abortSearch: function() {
+		if (this.client) {
+			this.client.abort();
+		}
+	},
 	getFile: function(file) {
-		var me = this;
-		return me.$http(file.url).get();
-	}//,
-	// getLibrary: function(sLibraryName) {
-	// 	var me = this;
-	// 	return new Promise(function(resolve, reject) {
-	// 		$.ajax({
-	// 			headers: {
-	// 				'Accept': 'application/json',
-	// 				'Content-Type': 'application/json'
-	// 			},
-	// 			crossDomain: true,
-	// 			async: true,
-	// 			type: 'GET',
-	// 			dataType: 'json',
-	// 			url: me.sBaseUrl + "/libraries/" + sLibraryName,
-	// 			success: function(data) {
-	// 				resolve(data);
-	// 			},
-	// 			error: function(error) {
-	// 				reject(error);
-	// 			}
-	// 		});
-	// 	});
-	// }
+			var me = this;
+			return me.$http(file.url).get();
+		} //,
+		// getLibrary: function(sLibraryName) {
+		// 	var me = this;
+		// 	return new Promise(function(resolve, reject) {
+		// 		$.ajax({
+		// 			headers: {
+		// 				'Accept': 'application/json',
+		// 				'Content-Type': 'application/json'
+		// 			},
+		// 			crossDomain: true,
+		// 			async: true,
+		// 			type: 'GET',
+		// 			dataType: 'json',
+		// 			url: me.sBaseUrl + "/libraries/" + sLibraryName,
+		// 			success: function(data) {
+		// 				resolve(data);
+		// 			},
+		// 			error: function(error) {
+		// 				reject(error);
+		// 			}
+		// 		});
+		// 	});
+		// }
 });

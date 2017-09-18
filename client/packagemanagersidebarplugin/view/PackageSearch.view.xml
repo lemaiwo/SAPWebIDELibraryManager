@@ -7,6 +7,7 @@
 			<Toolbar class="sapUiMediumMarginTop" id="toolbar1">
 				<Input value="{/search}" submit="onSearch"></Input>
 				<Button text="Search" press="onSearch"></Button>
+				<Button text="" icon="sap-icon://sys-cancel" press="onCancel"></Button>
 			</Toolbar>
 			<ScrollContainer height="500px" width="100%" horizontal="true" vertical="true" focusable="true">
 				<List headerText="Libraries ({/total})" items="{ path: '/results', sorter: { path: 'name' } }" itemPress="onSelectionChange" mode="None">

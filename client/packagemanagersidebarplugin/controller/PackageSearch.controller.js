@@ -25,6 +25,9 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			var search = this.getView().getModel().getProperty("/search");
 			var view = this.getView();
 			var context = view.getViewData().context;
+			if(me.taskId){
+				context.service.progress.stopTask(me.taskId);
+			}
 			context.service.progress.startTask("searchlibraries", "Search for libraries").then(function(taskid) {
 				me.taskId = taskid;
 				return context.service.cdnjs.search(search).then(function(result) {

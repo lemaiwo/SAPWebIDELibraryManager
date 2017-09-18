@@ -18,8 +18,9 @@
  */
 define({
 	sBaseUrl: "https://api.cdnjs.com",
+	client:null,
 	$http: function(url) {
-
+		var me = this;
 		// A small example of object
 		var core = {
 
@@ -28,9 +29,11 @@ define({
 
 				// Creating a promise
 				var promise = new Promise(function(resolve, reject) {
-
+					if(me.client){
+						me.client.abort();
+					}
 					// Instantiates the XMLHttpRequest
-					var client = new XMLHttpRequest();
+					me.client = new XMLHttpRequest();
 					var uri = url;
 
 					if (args && (method === 'POST' || method === 'PUT')) {
@@ -46,10 +49,10 @@ define({
 						}
 					}
 
-					client.open(method, uri);
-					client.send();
+					me.client.open(method, uri);
+					me.client.send();
 
-					client.onload = function() {
+					me.client.onload = function() {
 						if (this.status == 200) {
 							// Performs the function "resolve" when this.status is equal to 200
 							resolve(this.response);
@@ -58,7 +61,7 @@ define({
 							reject(this.statusText);
 						}
 					};
-					client.onerror = function() {
+					me.client.onerror = function() {
 						reject(this.statusText);
 					};
 				});

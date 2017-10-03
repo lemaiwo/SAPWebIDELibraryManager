@@ -37,6 +37,9 @@ define({
 		}).then(function(result) {
 			var m = JSON.parse(result);
 			var s = m["sap.ui5"];
+			if (!s.resources) {
+				s.resources = {};
+			}
 			var r = s.resources;
 			if (!r.js) {
 				r.js = [];

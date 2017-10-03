@@ -48,13 +48,13 @@ define({
 				r.css = [];
 			}
 			files.forEach(function(source) {
-				if(!/\.(js|css)$/i.test(source.filename)){
+				if (!/\.(js|css)$/i.test(source.filename)) {
 					source.status += "Only CSS en JS can be added to the manifest";
 					return;
 				}
 				if ((source.download && source.downloadstatus) || !source.download) {
 					//&& source.manifest )||(!source.download && source.manifest)) {
-					var extension = source.filename.substr(source.filename.lastIndexOf(".")+1);
+					var extension = source.filename.substr(source.filename.lastIndexOf(".") + 1);
 					var addFile = true;
 					r[extension] = r[extension].map(function(jsdoc) {
 						if (jsdoc && jsdoc.name && jsdoc.version && jsdoc.name === source.filename && source.manifest) {
@@ -161,6 +161,12 @@ define({
 	},
 	getManifest: function() {
 		var me = this;
+		Array.prototype.flatten = function() {
+			return this.reduce(function(prev, cur) {
+				var more = [].concat(cur).some(Array.isArray);
+				return prev.concat(more ? cur.flatten() : cur);
+			}, []);
+		};
 		// return this.context.service.selection.getSelection().then(function(aSelection) { // get project content
 		// 	if (aSelection && aSelection.length !== 0 && aSelection[0]) {
 		// 		return aSelection[0].document.getProject().then(function(project) {
@@ -173,8 +179,15 @@ define({
 		return this.getSelection().getProject().then(function(project) {
 			return me.getManifestFile(project);
 		}).then(function(files) {
-			if (files && files[0] && !Array.isArray(files[0])) {
-				return files[0]; //.getContent();
+			var flatFiles = files.flatten();
+			var oFile = undefined;
+			flatFiles.forEach(function(file) {
+				if (file) {
+					oFile = file;
+				}
+			});
+			if(oFile){
+				return oFile;
 			}
 			throw {
 				message: "Could not found manifest.js"
@@ -199,9 +212,10 @@ define({
 				}
 			}
 			if (folders && folders.length > 0) {
-				return Promise.all(folders).then(function(values) {
-					return values;
-				});
+				return Promise.all(folders);
+				// .then(function(values) {
+				// 	return values;
+				// });
 			}
 			return false;
 		});

@@ -18,9 +18,6 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 
 			var FileContext = new Context(this.fragment.getModel(), data.path + "/assets/0");
 
-			// modify size limit of model to show all available entries (default is 100)
-			FileContext.getModel().iSizeLimit = FileContext.getModel().getProperty(data.path + "/assets/0/files");
-
 			var model = this.fragment.getModel();
 			model.setProperty("/selectedVersion", FileContext.getObject().version);
 

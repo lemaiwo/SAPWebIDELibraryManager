@@ -26,7 +26,7 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			var view = this.getView();
 			var context = view.getViewData().context;
 			context.service.cdnjs.abortSearch();
-			if(me.taskId){
+			if (me.taskId) {
 				context.service.progress.stopTask(me.taskId);
 			}
 			context.service.progress.startTask("searchlibraries", "Search for libraries").then(function(taskid) {
@@ -58,6 +58,15 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 						transformedResult.push(library);
 
 					});
+					var iSizeLimit = 0;
+					result.results.forEach(function(line) {
+						iSizeLimit += line.assets.length;
+						line.assets.forEach(function(asset) {
+							iSizeLimit += asset.files.length + 1;
+						});
+					});
+					iSizeLimit += result.results.length;
+					me.getView().getModel().setSizeLimit(iSizeLimit + 1);
 					me.getView().getModel().setProperty("/results", transformedResult);
 					me.getView().getModel().setProperty("/total", result.total);
 					return context.service.progress.stopTask(me.taskId);
@@ -81,11 +90,11 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 
 			}
 		},
-		onCancel:function(oEvent){
+		onCancel: function(oEvent) {
 			var view = this.getView();
 			var context = view.getViewData().context;
 			context.service.cdnjs.abortSearch();
-			if(this.taskId){
+			if (this.taskId) {
 				context.service.progress.stopTask(this.taskId);
 			}
 		}

@@ -4,26 +4,31 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 	'sap/m/MessageBox',
 	'sap/ui/model/json/JSONModel',
 	"sap/m/BusyDialog"
-], function(BaseController, Context, MessageToast,MessageBox,JSONModel,BusyDialog) {
+], function(BaseController, Context, MessageToast, MessageBox, JSONModel, BusyDialog) {
 	"use strict";
 	return BaseController.extend("packagemanagersidebarplugin.controller.Library", {
 		busyDialog: new BusyDialog({
-				showCancelButton: false
-			}).addStyleClass("busy_indicator"),
+			showCancelButton: false
+		}).addStyleClass("busy_indicator"),
 		onBeforeShow: function(parent, fragment, callback, data) {
 			this.parent = parent;
 			this.fragment = fragment;
 			this.callback = callback;
 			this.data = data;
-			
+
 			var FileContext = new Context(this.fragment.getModel(), data.path + "/assets/0");
-			
+
+			// modify size limit of model to show all available entries (default is 100)
+			FileContext.getModel().iSizeLimit = FileContext.getModel().getProperty(data.path + "/assets/0/files");
+
 			var model = this.fragment.getModel();
-			model.setProperty("/selectedVersion",FileContext.getObject().version);
-			
+			model.setProperty("/selectedVersion", FileContext.getObject().version);
+
 			this.getFragmentControlById(this.parent, "files").setBindingContext(FileContext);
 			this.fragment.bindElement(data.path);
-			var dialogmodel = new JSONModel({project:data.project});
+			var dialogmodel = new JSONModel({
+				project: data.project
+			});
 			this.fragment.setModel(dialogmodel, "dialog");
 		},
 		updateFiles: function(oEvt) {
@@ -83,8 +88,10 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			}).then(function() {
 				MessageBox.show("Finished implementing the library");
 			}).catch(function(error) {
-				MessageBox.error("Finished with errors",{details:error.message});
-			}).then(function(){
+				MessageBox.error("Finished with errors", {
+					details: error.message
+				});
+			}).then(function() {
 				model.refresh();
 				me.busyDialog.close();
 				return context.service.progress.stopTask(me.taskId);

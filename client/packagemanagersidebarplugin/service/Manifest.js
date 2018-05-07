@@ -100,20 +100,35 @@ define({
 	},
 	createLibFolder: function(downloadpath) {
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
+		var me = this;
 		return this.getSelection().getProject().then(function(project) {
-			return project.createFolder("webapp/" + downloadpath);
+			return project.getFolderContent().then(function(content) {
+				var aFolders = content.filter(function(oItem) {
+					return oItem.getEntity().getType() === "folder" && (oItem.getEntity().getName() === "webapp" || oItem.getEntity().getName() === "src");
+				});
+				var sFoldername = "webapp";
+				if (aFolders && aFolders[0] && aFolders[0].getEntity().getName()) {
+					if (aFolders[0].getEntity().getName()) {
+						sFoldername = aFolders[0].getEntity().getName();
+					}
+				}
+				me.foldername = sFoldername;
+				return project.createFolder(sFoldername + "/" + downloadpath);
+			});
 		});
 	},
 	createFile: function(downloadpath, file, content) {
 		var me = this;
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
-		return this.getSelection().getProject().then(function(project) {
-			return project.createFolder("webapp/" + downloadpath);
+		return this.getSelection().getProject()
+		.then(function(project) {
+			return project.createFolder(me.foldername+"/" + downloadpath);
 		}).catch(function(error) {
 			file.downloadstatus = false;
 			file.status += "Error finding libs folder";
 			//return file;
-		}).then(function(folder) {
+		})
+		.then(function(folder) {
 			me.folder = folder;
 			return folder.getChild(file.filename);
 		}).catch(function(error) {
@@ -186,7 +201,7 @@ define({
 					oFile = file;
 				}
 			});
-			if(oFile){
+			if (oFile) {
 				return oFile;
 			}
 			throw {

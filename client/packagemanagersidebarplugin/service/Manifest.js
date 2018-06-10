@@ -102,9 +102,13 @@ define({
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
 		var me = this;
 		return this.getSelection().getProject().then(function(project) {
+			project.getCurrentMetadata().then(function(meta) {
+				console.log(meta);
+			});
 			return project.getFolderContent().then(function(content) {
 				var aFolders = content.filter(function(oItem) {
-					return oItem.getEntity().getType() === "folder" && (oItem.getEntity().getName() === "webapp" || oItem.getEntity().getName() === "src");
+					return oItem.getEntity().getType() === "folder" && (oItem.getEntity().getName() === "webapp" || oItem.getEntity().getName() ===
+						"src");
 				});
 				var sFoldername = "webapp";
 				if (aFolders && aFolders[0] && aFolders[0].getEntity().getName()) {
@@ -113,6 +117,15 @@ define({
 					}
 				}
 				me.foldername = sFoldername;
+				if (sFoldername === "src") {
+					return me.context.service.ui5projecthandler.getAppNamespace(project).then(function(namespace) {
+						//console.log(namespace+pathAndName);
+						me.foldername = sFoldername = sFoldername + "/" + ("" + namespace).replace(/\./g, "\/");
+						return project.createFolder(sFoldername + "/" + downloadpath);
+					}, function(error) {
+						return project.createFolder(sFoldername + "/" + downloadpath);
+					});
+				}
 				return project.createFolder(sFoldername + "/" + downloadpath);
 			});
 		});
@@ -121,41 +134,41 @@ define({
 		var me = this;
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
 		return this.getSelection().getProject()
-		.then(function(project) {
-			return project.createFolder(me.foldername+"/" + downloadpath);
-		}).catch(function(error) {
-			file.downloadstatus = false;
-			file.status += "Error finding libs folder";
-			//return file;
-		})
-		.then(function(folder) {
-			me.folder = folder;
-			return folder.getChild(file.filename);
-		}).catch(function(error) {
-			return me.folder.createFile(file.filename);
-			// .then(function(newFile) {
-			// 	return me._setFileContent(newFile, file, content);
-			// });
-		}).then(function(existsFile) {
-			if (!existsFile) {
+			.then(function(project) {
+				return project.createFolder(me.foldername + "/" + downloadpath);
+			}).catch(function(error) {
+				file.downloadstatus = false;
+				file.status += "Error finding libs folder";
+				//return file;
+			})
+			.then(function(folder) {
+				me.folder = folder;
+				return folder.getChild(file.filename);
+			}).catch(function(error) {
 				return me.folder.createFile(file.filename);
-			}
-			return existsFile;
-		}).then(function(existsFile) {
-			me.existFile = existsFile;
-			//return me._setFileContent(existsFile, file, content);
-			return existsFile.setContent(content);
-		}).then(function() {
-			return me.existFile.save();
-		}).then(function() {
-			file.downloadstatus = true;
-			file.status += "File created.";
-			return file;
-		}).catch(function(error) {
-			file.downloadstatus = false;
-			file.status += "Error adding content";
-			return file;
-		});
+				// .then(function(newFile) {
+				// 	return me._setFileContent(newFile, file, content);
+				// });
+			}).then(function(existsFile) {
+				if (!existsFile) {
+					return me.folder.createFile(file.filename);
+				}
+				return existsFile;
+			}).then(function(existsFile) {
+				me.existFile = existsFile;
+				//return me._setFileContent(existsFile, file, content);
+				return existsFile.setContent(content);
+			}).then(function() {
+				return me.existFile.save();
+			}).then(function() {
+				file.downloadstatus = true;
+				file.status += "File created.";
+				return file;
+			}).catch(function(error) {
+				file.downloadstatus = false;
+				file.status += "Error adding content";
+				return file;
+			});
 	},
 	_setFileContent: function(document, file, content) {
 		return document.setContent(content).fail(function(error) {

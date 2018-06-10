@@ -12,7 +12,6 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 		 * @memberOf client.view.PackageSearch
 		 */
 		onInit: function() {
-
 			this.getView().setModel(new JSONModel({
 				search: "",
 				project: "Nothing selected",

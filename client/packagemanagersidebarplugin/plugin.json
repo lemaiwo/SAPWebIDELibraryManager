@@ -11,7 +11,8 @@
 			"content",
 			"command",
 			"commandGroup",
-			"selection"
+			"selection",
+			"ui5projecthandler"
 		]
 	},
 	"provides": {

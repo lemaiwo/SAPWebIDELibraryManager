@@ -130,6 +130,16 @@ define({
 			});
 		});
 	},
+	createFolder: function(downloadpath,folderpath){
+		var me = this;
+		return this.getSelection().getProject()
+			.then(function(project) {
+				return project.createFolder(me.foldername + "/" + downloadpath);
+			})
+			.then(function(folder) {
+				return folder.createFolder(folderpath);
+			});
+	},
 	createFile: function(downloadpath, file, content) {
 		var me = this;
 		// return this.context.service.content.getCurrentDocument().then(function(document) {
@@ -149,11 +159,9 @@ define({
 				// .then(function(newFile) {
 				// 	return me._setFileContent(newFile, file, content);
 				// });
-			}).then(function(existsFile) {
-				if (!existsFile) {
-					return me.folder.createFile(file.filename);
-				}
-				return existsFile;
+			})
+			.then(function(oFolder) {
+				return me.folder.createFile(file.filename);
 			}).then(function(existsFile) {
 				me.existFile = existsFile;
 				//return me._setFileContent(existsFile, file, content);

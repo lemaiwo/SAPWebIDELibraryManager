@@ -38,6 +38,22 @@
 				"description": "promise"
 			}
 		},
+		"createFolder": {
+			"description": "add js source to manifest",
+			"params": [{
+				"name": "downloadpath",
+				"type": "string",
+				"description": "selected manifest file"
+			},{
+				"name": "filepath",
+				"type": "string",
+				"description": "selected manifest file"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "List of files"
+			}
+		},
 		"createFile": {
 			"description": "add js source to manifest",
 			"params": [{

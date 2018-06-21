@@ -66,7 +66,26 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			context.service.progress.startTask("loadlibrary", "Loading library").then(function(taskid) {
 				me.taskId = taskid;
 				return context.service.manifest.createLibFolder(downloadpath);
-			}).then(function() {
+			}).then(function(){
+				var filepaths = files.map(function(file){
+					return  file.filename.substr(0, file.filename.lastIndexOf("/"));
+				});
+				var uniquePaths = filepaths.filter(function(value, index, self) { 
+					if(value && value !== ""){
+						return self.indexOf(value) === index;
+					}
+					return false;
+				});
+				if(!uniquePaths || uniquePaths.length === 0){
+					return false;
+				}
+				var getfolderPromises = [];
+				uniquePaths.forEach(function(folderpath) {
+					getfolderPromises.push(context.service.manifest.createFolder(downloadpath, folderpath));
+				});
+				return Promise.all(getfolderPromises);
+			})
+			.then(function() {
 				var getfilesPromises = [];
 				files.forEach(function(file) {
 					if (file.download) {
@@ -80,6 +99,9 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 					}
 				});
 				return Promise.all(getfilesPromises);
+				// return getfilesPromises.reduce(function(p, fn) {
+				// 	return p.then(fn);
+				// }, Promise.resolve());
 			}).then(function() {
 				return context.service.manifest.addSourceManifest(files, selectedversion);
 			}).then(function() {

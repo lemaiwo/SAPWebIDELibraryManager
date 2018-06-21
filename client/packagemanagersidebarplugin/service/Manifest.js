@@ -167,6 +167,8 @@ define({
 				//return me._setFileContent(existsFile, file, content);
 				return existsFile.setContent(content);
 			}).then(function() {
+				//make dirty to force save
+				me.existFile._mState.bDirty = true;
 				return me.existFile.save();
 			}).then(function() {
 				file.downloadstatus = true;

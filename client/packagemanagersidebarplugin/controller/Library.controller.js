@@ -4,13 +4,13 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 	'sap/m/MessageBox',
 	'sap/ui/model/json/JSONModel',
 	"sap/m/BusyDialog"
-], function(BaseController, Context, MessageToast, MessageBox, JSONModel, BusyDialog) {
+], function (BaseController, Context, MessageToast, MessageBox, JSONModel, BusyDialog) {
 	"use strict";
 	return BaseController.extend("packagemanagersidebarplugin.controller.Library", {
 		busyDialog: new BusyDialog({
 			showCancelButton: false
 		}).addStyleClass("busy_indicator"),
-		onBeforeShow: function(parent, fragment, callback, data) {
+		onBeforeShow: function (parent, fragment, callback, data) {
 			this.parent = parent;
 			this.fragment = fragment;
 			this.callback = callback;
@@ -28,13 +28,13 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			});
 			this.fragment.setModel(dialogmodel, "dialog");
 		},
-		updateFiles: function(oEvt) {
+		updateFiles: function (oEvt) {
 			var selectedItem = oEvt.getParameter("selectedItem");
 			if (selectedItem.getBindingContext()) {
 				this.getFragmentControlById(this.parent, "files").setBindingContext(selectedItem.getBindingContext());
 			}
 		},
-		onAdd: function(evt) {
+		onAdd: function (evt) {
 			var me = this,
 				view = this.parent.getView(),
 				context = view.getViewData().context,
@@ -47,9 +47,9 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 			var baseUrl = "https://cdnjs.cloudflare.com/ajax/libs/" + data.name + "/" + selectedversion + "/";
 			var libname = data.name.replace(/[|&;$%@"<>()+,.]/g, "");
 			var downloadpath = "libs/" + libname + "/";
-			data.assets.forEach(function(asset) {
+			data.assets.forEach(function (asset) {
 				if (asset.version === selectedversion) {
-					asset.files.forEach(function(file) {
+					asset.files.forEach(function (file) {
 						if (file.download) {
 							file.manifesturi = downloadpath + file.filename;
 						} else {
@@ -61,62 +61,90 @@ sap.ui.define(["packagemanagersidebarplugin/controller/BaseController",
 					});
 				}
 			});
-			me.busyDialog.open();
+			// me.busyDialog.open();
 			model.refresh();
-			context.service.progress.startTask("loadlibrary", "Loading library").then(function(taskid) {
-				me.taskId = taskid;
-				return context.service.manifest.createLibFolder(downloadpath);
-			}).then(function(){
-				var filepaths = files.map(function(file){
-					return  file.filename.substr(0, file.filename.lastIndexOf("/"));
-				});
-				var uniquePaths = filepaths.filter(function(value, index, self) { 
-					if(value && value !== ""){
-						return self.indexOf(value) === index;
+			context.service.progress.startTask("loadlibrary", "Loading library").then(function (taskid) {
+					me.taskId = taskid;
+					return context.service.manifest.createLibFolder(downloadpath);
+				}).then(function () {
+					var filepaths = files.map(function (file) {
+						return file.filename.substr(0, file.filename.lastIndexOf("/"));
+					});
+					var uniquePaths = filepaths.filter(function (value, index, self) {
+						if (value && value !== "") {
+							return self.indexOf(value) === index;
+						}
+						return false;
+					});
+					if (!uniquePaths || uniquePaths.length === 0) {
+						return false;
 					}
-					return false;
-				});
-				if(!uniquePaths || uniquePaths.length === 0){
-					return false;
-				}
-				var getfolderPromises = [];
-				uniquePaths.forEach(function(folderpath) {
-					getfolderPromises.push(context.service.manifest.createFolder(downloadpath, folderpath));
-				});
-				return Promise.all(getfolderPromises);
-			})
-			.then(function() {
-				var getfilesPromises = [];
-				files.forEach(function(file) {
-					if (file.download) {
-						getfilesPromises.push(context.service.cdnjs.getFile(file).then(function(result) {
-							return context.service.manifest.createFile(downloadpath, file, result);
-						}).catch(function(error) {
-							file.downloadstatus = false;
-							file.status += "Could not download";
-							console.error("Could not download file:" + file.filename);
-						}));
-					}
-				});
-				return Promise.all(getfilesPromises);
-				// return getfilesPromises.reduce(function(p, fn) {
-				// 	return p.then(fn);
-				// }, Promise.resolve());
-			}).then(function() {
-				return context.service.manifest.addSourceManifest(files, selectedversion);
-			}).then(function() {
-				MessageBox.show("Finished implementing the library");
-			}).catch(function(error) {
-				MessageBox.error("Finished with errors", {
-					details: error.message
-				});
-			}).then(function() {
-				model.refresh();
-				me.busyDialog.close();
-				return context.service.progress.stopTask(me.taskId);
-			});
+					var getfolderPromises = [];
+					uniquePaths.forEach(function (folderpath) {
+						getfolderPromises.push(context.service.manifest.createFolder(downloadpath, folderpath));
+					});
+					return Promise.all(getfolderPromises);
+				})
+				.then(function () {
+					me.aFiles = [];
+					var getfilesPromises = [];
+					files.forEach(function (file) {
+						if (file.download) {
+							getfilesPromises.push(context.service.cdnjs.getFile(file).then(function (result) {
+								me.aFiles.push({
+									file: file,
+									result: result
+								});
+								return context.service.manifest.createFile(downloadpath, file, result);
+							}).catch(function (error) {
+								file.downloadstatus = false;
+								file.status += "Could not download";
+								console.error("Could not download file:" + file.filename);
+							}));
+						}
+					});
+					return Promise.all(getfilesPromises);
+					// return getfilesPromises.reduce(function(p, fn) {
+					// 	return p.then(fn);
+					// }, Promise.resolve());
+				}).then(function () {
+					var getfilesContentPromises = [];
+					me.aFiles.forEach(function (file) {
+						if (file.file.download) {
+							getfilesContentPromises.push({downloadpath:downloadpath, file:file.file, result:file.result});
+						}
+					});
+					return me.one_by_one(getfilesContentPromises,context.service.manifest.setFileContent);
+					// return getfilesPromises.reduce(function(p, fn) {
+					// 	return p.then(fn);
+					// }, Promise.resolve());
+				}).then(function () {
+					return context.service.manifest.addSourceManifest(files, selectedversion);
+				}).then(function () {
+					MessageBox.show("Finished implementing the library");
+				}).catch(function (error) {
+					MessageBox.error("Finished with errors", {
+						details: error.message
+					});
+				}).then(function () {
+					model.refresh();
+					// me.busyDialog.close();
+					return context.service.progress.stopTask(me.taskId);
+				})
 		},
-		onClose: function() {
+		one_by_one: function (objects_array, iterator, callback) {
+			var start_promise = objects_array.reduce(function (prom, object) {
+				return prom.then(function () {
+					return iterator(object);
+				});
+			}, Promise.resolve()); // initial
+			if (callback) {
+				start_promise.then(callback);
+			} else {
+				return start_promise;
+			}
+		},
+		onClose: function () {
 			this.fragment.close();
 		}
 	});

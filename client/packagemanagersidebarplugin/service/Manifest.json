@@ -70,6 +70,22 @@
 				"description": "List of files"
 			}
 		},
+		"setFileContent": {
+			"description": "add js source to manifest",
+			"params": [{
+				"name": "file",
+				"type": "object",
+				"description": "selected manifest file"
+			},{
+				"name": "content",
+				"type": "object",
+				"description": "data"
+			}],
+			"returns": {
+				"type": "object",
+				"description": "List of files"
+			}
+		},
 		"getManifest": {
 			"description": "Get list of the files in a selected project",
 			"params": [{

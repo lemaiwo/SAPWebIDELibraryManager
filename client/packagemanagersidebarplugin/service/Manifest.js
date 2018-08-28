@@ -151,17 +151,64 @@ define({
 				file.status += "Error finding libs folder";
 				//return file;
 			})
-			.then(function(folder) {
-				me.folder = folder;
-				return folder.getChild(file.filename);
+			// .then(function(folder) {
+			// 	me.folder = folder;
+			// 	return folder.getChild(file.filename);
+			// })
+			.then(function(oFolder) {
+				me.folder = oFolder;
+				// return me.folder.createFile(file.filename);
+				return oFolder.createFile(file.filename);
+			})
+			// .catch(function(error) {
+			// 	return me.folder.getChild(file.filename);//me.folder.createFile(file.filename);
+			// 	// .then(function(newFile) {
+			// 	// 	return me._setFileContent(newFile, file, content);
+			// 	// });
+			// }).then(function(existsFile) {
+			// 	me.existFile = existsFile;
+			// 	//return me._setFileContent(existsFile, file, content);
+			// 	return existsFile.setContent(content);
+			// }).then(function() {
+			// 	//make dirty to force save
+			// 	me.existFile._mState.bDirty = true;
+			// 	return me.existFile.save();
+			// }).then(function(){
+			// 	return me.context.service.editor.getDefaultEditorForContentType("sap.watt.ideplatform.contentType.javascript");
+			// }).then(function(oEditor){
+			// 	return me.context.service.content.open(me.existFile,oEditor);
+			// })
+			.then(function() {
+				file.downloadstatus = true;
+				file.status += "File created.";
+				return file;
 			}).catch(function(error) {
-				return me.folder.createFile(file.filename);
+				file.downloadstatus = false;
+				file.status += "Error adding creating file";
+				return file;
+			});
+	},
+	setFileContent:function(object){
+		var downloadpath=object.downloadpath, file=object.file, content=object.result;
+		var me = this;
+		// return this.context.service.content.getCurrentDocument().then(function(document) {
+		return this.getSelection().getProject()
+			.then(function(project) {
+				return project.createFolder(me.foldername + "/" + downloadpath);
+			}).catch(function(error) {
+				file.downloadstatus = false;
+				file.status += "Error finding libs folder";
+				//return file;
+			})
+			// .then(function(folder) {
+			// 	me.folder = folder;
+			// 	return folder.getChild(file.filename);
+			// })
+			.then(function(oFolder) {
+				return me.folder.getChild(file.filename);//me.folder.createFile(file.filename);
 				// .then(function(newFile) {
 				// 	return me._setFileContent(newFile, file, content);
 				// });
-			})
-			.then(function(oFolder) {
-				return me.folder.createFile(file.filename);
 			}).then(function(existsFile) {
 				me.existFile = existsFile;
 				//return me._setFileContent(existsFile, file, content);
@@ -170,9 +217,15 @@ define({
 				//make dirty to force save
 				me.existFile._mState.bDirty = true;
 				return me.existFile.save();
-			}).then(function() {
+			})
+			// .then(function(){
+			// 	return me.context.service.editor.getDefaultEditorForContentType("sap.watt.ideplatform.contentType.javascript");
+			// }).then(function(oEditor){
+			// 	return me.context.service.content.open(me.existFile,oEditor);
+			// })
+			.then(function() {
 				file.downloadstatus = true;
-				file.status += "File created.";
+				file.status += "File saved.";
 				return file;
 			}).catch(function(error) {
 				file.downloadstatus = false;
